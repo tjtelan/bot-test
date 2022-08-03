@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - staging
+      - trying
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  generate_changelog:
+    name: Generate changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - uses: Swatinem/rust-cache@v1
+        with:
+          key: changelog 
+      - name: Generate a changelog
+        uses: orhun/git-cliff-action@v1
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG-generated.md
+      - name: Print the changelog
+        run: cat "${{ steps.git-cliff.outputs.changelog }}"
+      - name: Upload generated CHANGELOG
+        uses: actions/upload-artifact@v2
+        with:
+          name: CHANGELOG-generated 
+          path: CHANGELOG-generated.md
+          retention-days: 1
+  done:
+    name: Done
+    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
+    needs: 
+      - generate_changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Done
+        run: echo "Done!"
