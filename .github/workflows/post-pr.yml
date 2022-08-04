@@ -59,7 +59,10 @@ jobs:
       run: |
         git reset --soft HEAD~1
         
-        # Note: github.event.head_commit.message won't have a value if job started manually
+        # This add is important in event CHANGELOG.md doesn't exist
+        git add CHANGELOG.md
+        
+        # Warn: github.event.head_commit.message empty if job started via workflow_dispatch
         git commit --all --message "${{ github.event.head_commit.message }}
         
         Update CHANGELOG.md and/or MSRV badge from Github Actions
