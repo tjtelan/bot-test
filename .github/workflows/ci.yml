@@ -83,8 +83,8 @@ jobs:
       - name: Upload generated CHANGELOG
         uses: actions/upload-artifact@v2
         with:
-          name: CHANGELOG-generated 
-          path: CHANGELOG-generated.md
+          name: CHANGELOG.md
+          path: CHANGELOG.md
           retention-days: 1
   done:
     name: Done
@@ -95,6 +95,35 @@ jobs:
     steps:
 
 
+      - name: Download generated CHANGELOG
+        uses: actions/download-artifact@v2
+        with:
+          name: CHANGELOG.md
+          path: .
+
+    #- name: my-app-install token
+    #  id: my-app
+    #  uses: getsentry/action-github-app-token@v1
+    #  with:
+    #    app_id: ${{ secrets.APP_ID }}
+    #    private_key: ${{ secrets.APP_PRIVATE_KEY }}
+    - name: Checkout private repo
+      uses: actions/checkout@v3
+      with:
+        repository: tjtelan/bot-test
+        token: ${{ secrets.GITHUB_TOKEN }}
+        #token: ${{ steps.my-app.outputs.token }}
+
+      - name: Configure git user 
+        run: |
+          git status
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Push Changelog changes
+        run: |
+          git commit -a -m "Update CHANGELOG.md"
+          git push
 
 
 
