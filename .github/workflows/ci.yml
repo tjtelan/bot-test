@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - uses: 8BitJonny/gh-get-current-pr@2.1.0
@@ -95,39 +95,53 @@ jobs:
     permissions:
       contents: write
     steps:
-
-
-      #- name: my-app-install token
-      #  id: my-app
-      #  uses: getsentry/action-github-app-token@v1
+      #- name: Checkout
+      #  uses: actions/checkout@v3
       #  with:
-      #    app_id: ${{ secrets.APP_ID }}
-      #    private_key: ${{ secrets.APP_PRIVATE_KEY }}
-      - name: Checkout repo
-        uses: actions/checkout@v3
-        with:
-          repository: tjtelan/bot-test
-          token: ${{ secrets.GITHUB_TOKEN }}
-          #fetch-depth: 0
-          #token: ${{ steps.my-app.outputs.token }}
-      - name: Download generated CHANGELOG
-        uses: actions/download-artifact@v2
-        with:
-          name: CHANGELOG.md
-          path: .
+      #    token: ${{ secrets.GITHUB_TOKEN }}
+
+      ##- name: my-app-install token
+      ##  id: my-app
+      ##  uses: getsentry/action-github-app-token@v1
+      ##  with:
+      ##    app_id: ${{ secrets.APP_ID }}
+      ##    private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      ##- name: Checkout repo
+      ##  uses: actions/checkout@v3
+      ##  with:
+      ##    repository: tjtelan/bot-test
+      ##    token: ${{ secrets.GITHUB_TOKEN }}
+      ##    #fetch-depth: 0
+      ##    #token: ${{ steps.my-app.outputs.token }}
+
+      #- name: Checkout PR
+      #  env:
+      #    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  run: |
+
+      #    # Get PR number from commit message
+      #    PR_NUMBER=$( echo $(git log -1 --pretty=%B) | grep -Po '(?<=\(#)\d(?=\))' )
+      #    gh pr checkout ${PR_NUMBER}
+
+      #- name: Download generated CHANGELOG
+      #  uses: actions/download-artifact@v2
+      #  with:
+      #    name: CHANGELOG.md
+      #    path: .
 
 
-      - name: Configure git user 
-        run: |
-          git status
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+      #- name: Configure git user 
+      #  run: |
+      #    git status
+      #    git config user.name "github-actions[bot]"
+      #    git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Push Changelog changes
-        run: |
-          git add CHANGELOG.md
-          git commit -m "Update CHANGELOG.md"
-          git push
+      #- name: Push Changelog changes
+      #  run: |
+      #    git add CHANGELOG.md
+      #    git commit -m "Update CHANGELOG.md [skip ci]"
+      #    git push
 
       - name: Done
         run: echo "Done!"
