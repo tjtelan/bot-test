@@ -134,7 +134,7 @@ jobs:
       - name: Push Changelog changes
         run: |
           git add CHANGELOG.md
-          git commit -m "Update CHANGELOG.md"
+          git commit -m "Update CHANGELOG.md [actions skip]"
           git push
 
       - name: Done
