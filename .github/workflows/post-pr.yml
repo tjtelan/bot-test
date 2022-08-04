@@ -67,7 +67,7 @@ jobs:
         git status
         git log -5
     - name: Pushing to the protected branch ${{ env.GIT_BRANCH_NAME }}
-      uses: CasperWA/push-protected@v2
+      uses: tjtelan/push-protected@main
       with:
         token: ${{ steps.my-app.outputs.token }}
         branch: ${{ env.GIT_BRANCH_NAME }}
