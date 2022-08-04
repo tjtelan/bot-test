@@ -114,9 +114,13 @@ jobs:
 
       - name: Checkout PR
         env:
-          prNumber: ${{ github.event.number }}
+          prTitle: ${{ github.event.pull_request.title }}  
+          #prNumber: ${{ github.event.number }}
         run: |
-          gh pr checkout ${prNumber}
+
+          # Get PR number from commit message
+          PR_NUMBER=$( echo ${prTitle} | grep -Po (?<=\(#)\d(?=\)) )
+          gh pr checkout ${PR_NUMBER}
 
       - name: Download generated CHANGELOG
         uses: actions/download-artifact@v2
