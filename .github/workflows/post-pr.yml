@@ -40,7 +40,7 @@ jobs:
     - name: Checkout private repo
       uses: actions/checkout@v3
       with:
-        repository: $(( github.repository }}
+        repository: tjtelan/bot-test
         token: ${{ steps.my-app.outputs.token }}
         fetch-depth: 0
     - name: Git branch name
