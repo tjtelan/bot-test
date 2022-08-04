@@ -94,6 +94,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      prNumber: ${{ github.event.number }}
     steps:
 
 
@@ -103,13 +105,19 @@ jobs:
       #  with:
       #    app_id: ${{ secrets.APP_ID }}
       #    private_key: ${{ secrets.APP_PRIVATE_KEY }}
-      - name: Checkout repo
-        uses: actions/checkout@v3
-        with:
-          repository: tjtelan/bot-test
-          token: ${{ secrets.GITHUB_TOKEN }}
-          #fetch-depth: 0
-          #token: ${{ steps.my-app.outputs.token }}
+
+      #- name: Checkout repo
+      #  uses: actions/checkout@v3
+      #  with:
+      #    repository: tjtelan/bot-test
+      #    token: ${{ secrets.GITHUB_TOKEN }}
+      #    #fetch-depth: 0
+      #    #token: ${{ steps.my-app.outputs.token }}
+
+      - name: Checkout PR
+        run: |
+          gh pr checkout ${prNumber}
+
       - name: Download generated CHANGELOG
         uses: actions/download-artifact@v2
         with:
