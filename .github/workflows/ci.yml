@@ -65,12 +65,12 @@ jobs:
           prTitle: ${{ steps.PR.outputs.pr_title }}  
           prNumber: ${{ steps.PR.outputs.number }}
         run: |
-          CI_BRANCH=$(git branch --show-current)
+          git log -5
           git pull
           git checkout "$DEFAULT_BRANCH"
           git status
-          git merge "CI_BRANCH" -m "${prTitle} (#${prNumber})"
-
+          git merge $(git log -1 --format='%H') -m "${prTitle} (#${prNumber})"
+          git log -5
 
 
       - name: Generate a changelog
