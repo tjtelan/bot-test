@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-
 jobs:
   generate_changelog:
     name: Generate changelog
@@ -32,20 +31,18 @@ jobs:
     needs:
       - generate_changelog
     steps:
-  - name: my-app-install token
-    id: my-app
-    uses: getsentry/action-github-app-token@v1
-    with:
-      app_id: ${{ secrets.APP_ID }}
-      private_key: ${{ secrets.APP_PRIVATE_KEY }}
-
-  - name: Checkout private repo
-    uses: actions/checkout@v3
-    with:
-      repository: getsentry/my-private-repo
-      token: ${{ steps.my-app.outputs.token }}
-      fetch-depth: 0
-
+    - name: my-app-install token
+      id: my-app
+      uses: getsentry/action-github-app-token@v1
+      with:
+        app_id: ${{ secrets.APP_ID }}
+        private_key: ${{ secrets.APP_PRIVATE_KEY }}
+    - name: Checkout private repo
+      uses: actions/checkout@v3
+      with:
+        repository: getsentry/my-private-repo
+        token: ${{ steps.my-app.outputs.token }}
+        fetch-depth: 0
     - name: Git branch name
       id: git-branch-name
       uses: EthanSK/git-branch-name-action@v1
