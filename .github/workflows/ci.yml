@@ -117,8 +117,7 @@ jobs:
 
       - name: Checkout PR
         env:
-          prTitle: ${{ github.event.pull_request.title }}  
-          #prNumber: ${{ github.event.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
 
           # Get PR number from commit message
