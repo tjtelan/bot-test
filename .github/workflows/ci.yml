@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - uses: 8BitJonny/gh-get-current-pr@2.1.0
@@ -95,7 +95,10 @@ jobs:
     permissions:
       contents: write
     steps:
-
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       #- name: my-app-install token
       #  id: my-app
