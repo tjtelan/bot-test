@@ -31,13 +31,21 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - generate_changelog
-      - generate_msrv
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        token: ${{ secrets.CHANGELOG_UPDATE_PAT }}
+  - name: my-app-install token
+    id: my-app
+    uses: getsentry/action-github-app-token@v1
+    with:
+      app_id: ${{ secrets.APP_ID }}
+      private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+  - name: Checkout private repo
+    uses: actions/checkout@v3
+    with:
+      repository: getsentry/my-private-repo
+      token: ${{ steps.my-app.outputs.token }}
+      fetch-depth: 0
+
     - name: Git branch name
       id: git-branch-name
       uses: EthanSK/git-branch-name-action@v1
@@ -68,6 +76,6 @@ jobs:
     - name: Pushing to the protected branch ${{ env.GIT_BRANCH_NAME }}
       uses: ad-m/github-push-action@master
       with:
-        github_token: ${{ secrets.CHANGELOG_UPDATE_PAT }}
+        github_token: ${{ steps.my-app.outputs.token }}
         branch: ${{ env.GIT_BRANCH_NAME }}
         force_with_lease: true
