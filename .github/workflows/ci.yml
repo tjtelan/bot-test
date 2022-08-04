@@ -65,9 +65,11 @@ jobs:
           prTitle: ${{ steps.PR.outputs.pr_title }}  
           prNumber: ${{ steps.PR.outputs.number }}
         run: |
+          CI_BRANCH=$(git branch --show-current)
+          git pull
           git checkout "$DEFAULT_BRANCH"
           git status
-          git merge "$GITHUB_HEAD_REF" -m "${prTitle} (#${prNumber})"
+          git merge "CI_BRANCH" -m "${prTitle} (#${prNumber})"
 
 
 
