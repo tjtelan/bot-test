@@ -97,12 +97,6 @@ jobs:
     steps:
 
 
-      - name: Download generated CHANGELOG
-        uses: actions/download-artifact@v2
-        with:
-          name: CHANGELOG.md
-          path: .
-
       #- name: my-app-install token
       #  id: my-app
       #  uses: getsentry/action-github-app-token@v1
@@ -115,6 +109,12 @@ jobs:
           repository: tjtelan/bot-test
           token: ${{ secrets.GITHUB_TOKEN }}
           #token: ${{ steps.my-app.outputs.token }}
+      - name: Download generated CHANGELOG
+        uses: actions/download-artifact@v2
+        with:
+          name: CHANGELOG.md
+          path: .
+
 
       - name: Configure git user 
         run: |
