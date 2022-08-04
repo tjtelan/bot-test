@@ -92,6 +92,8 @@ jobs:
     needs: 
       - generate_changelog
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
 
 
@@ -101,18 +103,18 @@ jobs:
           name: CHANGELOG.md
           path: .
 
-    #- name: my-app-install token
-    #  id: my-app
-    #  uses: getsentry/action-github-app-token@v1
-    #  with:
-    #    app_id: ${{ secrets.APP_ID }}
-    #    private_key: ${{ secrets.APP_PRIVATE_KEY }}
-    - name: Checkout private repo
-      uses: actions/checkout@v3
-      with:
-        repository: tjtelan/bot-test
-        token: ${{ secrets.GITHUB_TOKEN }}
-        #token: ${{ steps.my-app.outputs.token }}
+      #- name: my-app-install token
+      #  id: my-app
+      #  uses: getsentry/action-github-app-token@v1
+      #  with:
+      #    app_id: ${{ secrets.APP_ID }}
+      #    private_key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          repository: tjtelan/bot-test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          #token: ${{ steps.my-app.outputs.token }}
 
       - name: Configure git user 
         run: |
@@ -124,8 +126,6 @@ jobs:
         run: |
           git commit -a -m "Update CHANGELOG.md"
           git push
-
-
 
       - name: Done
         run: echo "Done!"
