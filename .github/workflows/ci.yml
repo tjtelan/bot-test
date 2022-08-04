@@ -65,11 +65,8 @@ jobs:
           prTitle: ${{ steps.PR.outputs.pr_title }}  
           prNumber: ${{ steps.PR.outputs.number }}
         run: |
-          git reset HEAD~1 --hard
-          git branch for-the-changelog
           git checkout "$DEFAULT_BRANCH"
-          git status
-          git merge for-the-changelog -m "${prTitle} (#${prNumber})"
+          git commit --allow-empty -m "${prTitle} (#${prNumber})"
           git log -5
 
 
