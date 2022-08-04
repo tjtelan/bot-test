@@ -62,8 +62,8 @@ jobs:
 
       - name: Perform merge
         env:
-          prTitle: ${{ steps.PR.outputs.pr_title }}  
-          prNumber: ${{ steps.PR.outputs.number }}
+          prTitle: ${{ github.event.pull_request.title }}  
+          prNumber: ${{ github.event.number }}
         run: |
           git checkout "$DEFAULT_BRANCH"
           git commit --allow-empty -m "${prTitle} (#${prNumber})"
