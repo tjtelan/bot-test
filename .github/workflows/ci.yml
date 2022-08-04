@@ -119,7 +119,7 @@ jobs:
         run: |
 
           # Get PR number from commit message
-          PR_NUMBER=$( echo ${prTitle} | grep -Po '(?<=\(#)\d(?=\))'' )
+          PR_NUMBER=$( echo ${prTitle} | grep -Po '(?<=\(#)\d(?=\))' )
           gh pr checkout ${PR_NUMBER}
 
       - name: Download generated CHANGELOG
