@@ -65,6 +65,8 @@ jobs:
           prTitle: ${{ github.event.pull_request.title }}  
           prNumber: ${{ github.event.number }}
         run: |
+          CI_BRANCH=$(git branch --show-current)
+          git pull
           git checkout "$DEFAULT_BRANCH"
           git commit --allow-empty -m "${prTitle} (#${prNumber})"
           git log -5
