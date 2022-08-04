@@ -94,8 +94,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    env:
-      prNumber: ${{ github.event.number }}
     steps:
 
 
@@ -115,6 +113,8 @@ jobs:
       #    #token: ${{ steps.my-app.outputs.token }}
 
       - name: Checkout PR
+        env:
+          prNumber: ${{ github.event.number }}
         run: |
           gh pr checkout ${prNumber}
 
