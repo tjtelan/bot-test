@@ -108,6 +108,7 @@ jobs:
         with:
           repository: tjtelan/bot-test
           token: ${{ secrets.GITHUB_TOKEN }}
+          #fetch-depth: 0
           #token: ${{ steps.my-app.outputs.token }}
       - name: Download generated CHANGELOG
         uses: actions/download-artifact@v2
@@ -124,7 +125,8 @@ jobs:
 
       - name: Push Changelog changes
         run: |
-          git commit -a -m "Update CHANGELOG.md"
+          git add CHANGELOG.md
+          git commit -m "Update CHANGELOG.md"
           git push
 
       - name: Done
