@@ -65,8 +65,6 @@ jobs:
           prTitle: ${{ github.event.pull_request.title }}  
           prNumber: ${{ github.event.number }}
         run: |
-          git reset HEAD~1 --hard
-          git branch for-the-changelog
           git checkout "$DEFAULT_BRANCH"
           git commit --allow-empty -m "${prTitle} (#${prNumber})"
           git log -5
