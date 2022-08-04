@@ -68,10 +68,12 @@ jobs:
         Update CHANGELOG.md and/or MSRV badge from Github Actions
         [actions skip]"
         git status
+
+        git push --force-with-lease
         git log -5
-    - name: Pushing to the protected branch ${{ env.GIT_BRANCH_NAME }}
-      uses: tjtelan/push-protected@main
-      with:
-        token: ${{ steps.my-app.outputs.token }}
-        branch: ${{ env.GIT_BRANCH_NAME }}
-        force: true
+    #- name: Pushing to the protected branch ${{ env.GIT_BRANCH_NAME }}
+    #  uses: tjtelan/push-protected@main
+    #  with:
+    #    token: ${{ steps.my-app.outputs.token }}
+    #    branch: ${{ env.GIT_BRANCH_NAME }}
+    #    force: true
