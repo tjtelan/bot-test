@@ -37,9 +37,9 @@ jobs:
       - name: Set outputs
         if: inputs.event_name == 'pull_request'
         run: |
-          echo "PR_BRANCH=${{ step.pr_info.outputs.head_branch}}" | tee $GITHUB_ENV
-          echo "PR_NUMBER=${{ step.pr_info.outputs.number}}" | tee $GITHUB_ENV
-          echo "PR_TITLE=${{ step.pr_info.outputs.title}}" | tee $GITHUB_ENV
+          echo "PR_BRANCH=${{ step.get_pr_info.outputs.head_branch}}" | tee $GITHUB_ENV
+          echo "PR_NUMBER=${{ step.get_pr_info.outputs.number}}" | tee $GITHUB_ENV
+          echo "PR_TITLE=${{ step.get_pr_info.outputs.title}}" | tee $GITHUB_ENV
 
       - name: Get PR info from push event
         if: inputs.event_name == 'push'
