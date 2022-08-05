@@ -27,6 +27,7 @@ jobs:
 
   get_pr_number_push_event:
     name: Get the PR number from Push event
+    runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
     env:
       prTitle: ${{ github.event.commit.message }}
