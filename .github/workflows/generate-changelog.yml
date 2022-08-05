@@ -76,7 +76,7 @@ jobs:
           prTitle: ${{ github.event.pull_request.title }}
           prNumber: ${{ github.event.number }}
         run: |
-          git checkout "$GIT_BRANCH"
+          git checkout "${{ env.GIT_BRANCH }}"
           git commit --all --allow-empty -m "${prTitle} (#${prNumber})"
           git log -5
 
