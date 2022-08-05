@@ -16,10 +16,8 @@ env:
 
 jobs:
   generate_changelog:
-    name: Generate the changelog
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ./.github/workflows/generate-changelog.yml
+    uses: ./.github/workflows/generate-changelog.yml
+
 
 
 
@@ -29,8 +27,6 @@ jobs:
     needs: 
       - generate_changelog
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Done
         run: echo "Done!"

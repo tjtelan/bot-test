@@ -27,6 +27,8 @@ jobs:
   generate_changelog:
     name: Generate changelog
     runs-on: ubuntu-latest
+    outputs:
+      needs-commit: ${{ steps.changelog-update-test.outputs.test }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -35,18 +37,6 @@ jobs:
 
       - uses: 8BitJonny/gh-get-current-pr@2.1.0
         id: PR
-      #- name: my-app-install token
-      #  id: my-app
-      #  uses: getsentry/action-github-app-token@v1
-      #  with:
-      #    app_id: ${{ secrets.APP_ID }}
-      #    private_key: ${{ secrets.APP_PRIVATE_KEY }}
-      #- name: Checkout repo
-      #  uses: actions/checkout@v3
-      #  with:
-      #    repository: tjtelan/bot-test
-      #    token: ${{ steps.my-app.outputs.token }}
-
       - name: Configure git user
         run: |
           git status
@@ -74,7 +64,7 @@ jobs:
           prNumber: ${{ github.event.number }}
         run: |
           git checkout "$DEFAULT_BRANCH"
-          git commit -c --allow-empty -m "${prTitle} (#${prNumber})"
+          git commit --all --allow-empty -m "${prTitle} (#${prNumber})"
           git log -5
 
 
@@ -95,14 +85,42 @@ jobs:
           path: ${{ env.CHANGELOG_FILENAME }}
           retention-days: 1
 
+      # Test if CHANGELOG.md needs to be updated
+      - name: Test if ${{ env.CHANGELOG_FILENAME }} needs updating in repo
+        id: result
+        run: |
+          git add $CHANGELOG_FILENAME
+          FILES_ADDED=$(git diff --cached --name-only | grep --count $CHANGELOG_FILENAME)
+          if [[ "$FILES_ADDED" -eq 1 ]]; then
+            OLD_COMMIT_MSG=$(git log --format=%B -n 1 HEAD)
+                git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
+            echo "::set-output name=result::true"
+          else
+                echo "No $CHANGELOG_FILENAME changes to commit"
+            echo "::set-output name=result::false"
+          fi
+
+
+
   commit_changelog:
     name: Commit ${{ env.CHANGELOG_FILENAME }} updates
     runs-on: ubuntu-latest
     permissions:
       content: write
-    outputs:
-      changelog-update: ${{ steps.changelog-update-test.outputs.test }}
     steps:
+      #- name: my-app-install token
+      #  id: my-app
+      #  uses: getsentry/action-github-app-token@v1
+      #  with:
+      #    app_id: ${{ secrets.APP_ID }}
+      #    private_key: ${{ secrets.APP_PRIVATE_KEY }}
+      #- name: Checkout repo
+      #  uses: actions/checkout@v3
+      #  with:
+      #    repository: tjtelan/bot-test
+      #    token: ${{ steps.my-app.outputs.token }}
+
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -115,21 +133,16 @@ jobs:
           name: ${{ env.CHANGELOG_FILENAME }}
           path: .
 
-      # Test if CHANGELOG.md needs to be updated
-      - name: Test if ${{ env.CHANGELOG_FILENAME }} needs updating in repo
-        id: changelog-update-test
-        run: |
-          git add $CHANGELOG_FILENAME
-          FILES_ADDED=$(git diff --cached --name-only | grep --count $CHANGELOG_FILENAME)
-          if [[ "$FILES_ADDED" -eq 1 ]]; then
-            OLD_COMMIT_MSG=$(git log --format=%B -n 1 HEAD)
-                git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
-            echo "::set-output name=test::true"
-          else
-                echo "No $CHANGELOG_FILENAME changes to commit"
-            echo "::set-output name=test::false"
-          fi
+      #- name: Git branch name
+      #  id: git-branch-name
+      #  uses: EthanSK/git-branch-name-action@v1
+
+
 
       - name: Commit ${{ env.CHANGELOG_FILENAME }} to repo
+        needs: generate_changelog
+        if: needs.generate_changelog.output.needs-commit == 'true'
         run: |
+          git add ${{ env.CHANGELOG_FILENAME }}
+          git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
           git push
