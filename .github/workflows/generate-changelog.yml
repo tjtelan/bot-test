@@ -24,7 +24,6 @@ jobs:
   # If PR run, we can reuse the title and PR number
   # Otherwise, we will reuse the commit message
 
-  setup:
   generate_changelog:
     name: Generate changelog
     runs-on: ubuntu-latest
