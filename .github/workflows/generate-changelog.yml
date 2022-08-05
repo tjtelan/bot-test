@@ -87,18 +87,24 @@ jobs:
           path: ${{ env.CHANGELOG_FILENAME }}
           retention-days: 1
 
+      - name: Reset
+        run: |
+          git reset HEAD --hard
+          git checkout ${{ env.GIT_BRANCH_NAME }}
+
       # Test if CHANGELOG.md needs to be updated
       - name: Test if ${{ env.CHANGELOG_FILENAME }} needs updating in repo
         id: result
         run: |
           git add $CHANGELOG_FILENAME
+          git status
           FILES_ADDED=$(git diff --cached --name-only | grep --count $CHANGELOG_FILENAME)
           if [[ "$FILES_ADDED" -eq 1 ]]; then
-            OLD_COMMIT_MSG=$(git log --format=%B -n 1 HEAD)
-                git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
+            echo "Need to update $CHANGELOG_FILENAME"
+            git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
             echo "::set-output name=result::true"
           else
-                echo "No $CHANGELOG_FILENAME changes to commit"
+            echo "No $CHANGELOG_FILENAME changes to commit"
             echo "::set-output name=result::false"
           fi
 
