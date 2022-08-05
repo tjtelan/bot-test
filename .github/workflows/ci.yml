@@ -52,8 +52,6 @@ jobs:
 
   generate_changelog:
     needs: get_pr_number
-    env:
-      PR_NUM: ${{ env.PR_NUMBER }}
     uses: ./.github/workflows/generate-changelog.yml
     with:
       event_name:  ${{ github.event_name }}
