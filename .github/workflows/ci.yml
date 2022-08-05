@@ -27,7 +27,7 @@ jobs:
 
   generate_changelog:
     needs: setup
-    uses: tjtelan/bot-test/.github/workflows/generate-changelog.yml@${{ needs.setup.outputs.branch-name }}
+    uses: tjtelan/bot-test/.github/workflows/generate-changelog.yml@${{needs.setup.outputs.branch-name}}
 
   done:
     name: Done
