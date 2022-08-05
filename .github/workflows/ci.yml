@@ -24,11 +24,6 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-      - name: set-shell-env
-        uses: lukka/set-shell-env@v1.1
-        with:
-        PR_NUMBER:  ${{ github.event.pull_request.number }}
-
 
   get_pr_number_push_event:
     name: Get the PR number from Push event
