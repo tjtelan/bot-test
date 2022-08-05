@@ -28,7 +28,7 @@ jobs:
     name: Generate changelog
     runs-on: ubuntu-latest
     outputs:
-      needs-commit: ${{steps.changelog-update-test.outputs.test}}
+      needs-commit: ${{steps.repo-check.outputs.result}}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -94,7 +94,7 @@ jobs:
 
       # Test if CHANGELOG.md needs to be updated
       - name: Test if ${{ env.CHANGELOG_FILENAME }} needs updating in repo
-        id: result
+        id: repo-check
         run: |
           git add $CHANGELOG_FILENAME
           git status
