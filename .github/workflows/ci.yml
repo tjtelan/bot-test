@@ -48,7 +48,7 @@ jobs:
         id: number
         if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
         run: |
-          NUMBER=$( echo ${{ github.event.head_commit.message }} | grep -Po (?<=\(#)\d(?=\)) )
+          NUMBER=$( echo ${{ github.head_commit.message }} | grep -Po (?<=\(#)\d(?=\)) )
           echo "PR_NUMBER=$NUMBER" >> $GITHUB_ENV
           echo "::set-output name=number::$NUMBER"
 
