@@ -28,7 +28,7 @@ jobs:
     name: Generate changelog
     runs-on: ubuntu-latest
     outputs:
-      needs-commit: ${{ steps.changelog-update-test.outputs.test }}
+      needs-commit: ${{steps.changelog-update-test.outputs.test}}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
