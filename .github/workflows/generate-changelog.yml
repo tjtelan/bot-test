@@ -21,8 +21,7 @@ jobs:
     #  pr_branch: ${{ steps.pr_info.outputs.name }}
     #  pr_number: ${{ steps.pr_info.outputs.number }
     #  pr_title: ${{ steps.pr_info.outputs.title }
-    permissions:
-      permissions: read-all
+    permissions: read-all
     steps:
       - name: Checkout
         uses: actions/checkout@v3
