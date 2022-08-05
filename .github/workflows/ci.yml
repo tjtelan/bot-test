@@ -27,7 +27,6 @@ jobs:
         id: extract-branch
 
   generate_changelog:
-    needs: setup
     uses: tjtelan/bot-test/.github/workflows/generate-changelog.yml@pr-6
 
   done:
