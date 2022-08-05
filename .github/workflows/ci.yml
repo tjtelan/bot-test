@@ -36,7 +36,7 @@ jobs:
     outputs:
       pr_number: ${{ steps.pr.outputs.number }}
     env:
-      prTitle: ${{ github.event.commit.message }}
+      prTitle: ${{ github.event.head_commit.message }}
     steps:
       - name: Get PR number
         id: number
