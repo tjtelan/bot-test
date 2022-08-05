@@ -101,8 +101,8 @@ jobs:
       #    git log -5
 
       - name: Simulate merge for changelog
-        env:
         if: needs.generate_changelog.output.needs-commit == 'true'
+        env:
           defaultBranch: ${{ github.event.repository.default_branch }}
           prNumber: ${{ env.PR_NUMBER }}
           prTitle: ${{ env.PR_TITLE }}
