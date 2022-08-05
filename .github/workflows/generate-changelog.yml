@@ -24,9 +24,22 @@ jobs:
   # If PR run, we can reuse the title and PR number
   # Otherwise, we will reuse the commit message
 
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      branch-name: ${{ steps.extract-branch.outputs.name }}
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract-branch
+
+
   generate_changelog:
     name: Generate changelog
     runs-on: ubuntu-latest
+    needs: setup
     outputs:
       needs-commit: ${{steps.changelog-update-test.outputs.test}}
     steps:
@@ -63,7 +76,7 @@ jobs:
           prTitle: ${{ github.event.pull_request.title }}
           prNumber: ${{ github.event.number }}
         run: |
-          git checkout "$DEFAULT_BRANCH"
+          git checkout "$GIT_BRANCH"
           git commit --all --allow-empty -m "${prTitle} (#${prNumber})"
           git log -5
 
@@ -143,6 +156,7 @@ jobs:
       - name: Commit ${{ env.CHANGELOG_FILENAME }} to repo
         if: needs.generate_changelog.output.needs-commit == 'true'
         run: |
+          git checkout ${{ env.GIT_BRANCH }}
           git add ${{ env.CHANGELOG_FILENAME }}
           git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
           git push

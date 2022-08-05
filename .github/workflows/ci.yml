@@ -15,17 +15,6 @@ env:
 
 
 jobs:
-  setup:
-    name: Setup
-    runs-on: ubuntu-latest
-    outputs:
-      branch-name: ${{ steps.extract-branch.outputs.name }}
-    steps:
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract-branch
-
   generate_changelog:
     uses: tjtelan/bot-test/.github/workflows/generate-changelog.yml@pr-6
 
