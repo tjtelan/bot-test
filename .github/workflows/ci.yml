@@ -16,76 +16,13 @@ env:
 
 jobs:
   generate_changelog:
-    name: Generate changelog
+    name: Generate the changelog
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: 8BitJonny/gh-get-current-pr@2.1.0
-        id: PR
+      - uses: ./.github/workflows/generate-changelog.yml
 
 
-      #- name: my-app-install token
-      #  id: my-app
-      #  uses: getsentry/action-github-app-token@v1
-      #  with:
-      #    app_id: ${{ secrets.APP_ID }}
-      #    private_key: ${{ secrets.APP_PRIVATE_KEY }}
-      #- name: Checkout repo
-      #  uses: actions/checkout@v3
-      #  with:
-      #    repository: tjtelan/bot-test
-      #    token: ${{ steps.my-app.outputs.token }}
-      
-      - name: Configure git user 
-        run: |
-          git status
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      #- name: Add updates and rewrite commit message to branch ${{ env.GIT_BRANCH_NAME }}
-      #  run: |
-      #    git reset --soft HEAD~1
-
-      #    # This add is important in event CHANGELOG.md doesn't exist
-      #    git add CHANGELOG.md
-
-      #    # Warn: github.event.head_commit.message empty if job started via workflow_dispatch
-      #    git commit --all --message "${{ github.event.head_commit.message }}
-
-      #    Update CHANGELOG.md and/or MSRV badge from Github Actions
-      #    [actions skip]"
-      #    git status
-      #    git log -5
-
-      - name: Perform merge
-        env:
-          prTitle: ${{ github.event.pull_request.title }}  
-          prNumber: ${{ github.event.number }}
-        run: |
-          git checkout "$DEFAULT_BRANCH"
-          git commit --allow-empty -m "${prTitle} (#${prNumber})"
-          git log -5
-
-
-      - name: Generate a changelog
-        uses: orhun/git-cliff-action@v1
-        id: git-cliff
-        with:
-          config: cliff.toml
-          args: --verbose
-        env:
-          OUTPUT: CHANGELOG.md
-      - name: Print the changelog
-        run: cat "${{ steps.git-cliff.outputs.changelog }}"
-      - name: Upload generated CHANGELOG
-        uses: actions/upload-artifact@v2
-        with:
-          name: CHANGELOG.md
-          path: CHANGELOG.md
-          retention-days: 1
   done:
     name: Done
     if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
@@ -95,53 +32,5 @@ jobs:
     permissions:
       contents: write
     steps:
-      #- name: Checkout
-      #  uses: actions/checkout@v3
-      #  with:
-      #    token: ${{ secrets.GITHUB_TOKEN }}
-
-      ##- name: my-app-install token
-      ##  id: my-app
-      ##  uses: getsentry/action-github-app-token@v1
-      ##  with:
-      ##    app_id: ${{ secrets.APP_ID }}
-      ##    private_key: ${{ secrets.APP_PRIVATE_KEY }}
-
-      ##- name: Checkout repo
-      ##  uses: actions/checkout@v3
-      ##  with:
-      ##    repository: tjtelan/bot-test
-      ##    token: ${{ secrets.GITHUB_TOKEN }}
-      ##    #fetch-depth: 0
-      ##    #token: ${{ steps.my-app.outputs.token }}
-
-      #- name: Checkout PR
-      #  env:
-      #    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #  run: |
-
-      #    # Get PR number from commit message
-      #    PR_NUMBER=$( echo $(git log -1 --pretty=%B) | grep -Po '(?<=\(#)\d(?=\))' )
-      #    gh pr checkout ${PR_NUMBER}
-
-      #- name: Download generated CHANGELOG
-      #  uses: actions/download-artifact@v2
-      #  with:
-      #    name: CHANGELOG.md
-      #    path: .
-
-
-      #- name: Configure git user 
-      #  run: |
-      #    git status
-      #    git config user.name "github-actions[bot]"
-      #    git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      #- name: Push Changelog changes
-      #  run: |
-      #    git add CHANGELOG.md
-      #    git commit -m "Update CHANGELOG.md [skip ci]"
-      #    git push
-
       - name: Done
         run: echo "Done!"

@@ -1,0 +1,135 @@
+name: Generate CHANGELOG.md
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  CHANGELOG_FILENAME: CHANGELOG.md
+
+jobs:
+  ## If this is staging, check if the Changelog is up to date first
+  ## if not, update it. This will end up with Bors cancelling the test
+  ## Comment in PR to restart the test
+  #  changelog_premerge_check:
+  #    name: Check if Changelog is up to date before running merge CI
+  #    runs-on: ubuntu-latest
+  #    steps:
+
+
+  # If event is workflow_dispatch, just add note that CHANGELOG.md was updated
+  # If event is workflow_call, then
+
+  # Check if this is PR run or a Bors staging run
+  # If PR run, we can reuse the title and PR number
+  # Otherwise, we will reuse the commit message
+
+  generate_changelog:
+    name: Generate changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: 8BitJonny/gh-get-current-pr@2.1.0
+        id: PR
+      #- name: my-app-install token
+      #  id: my-app
+      #  uses: getsentry/action-github-app-token@v1
+      #  with:
+      #    app_id: ${{ secrets.APP_ID }}
+      #    private_key: ${{ secrets.APP_PRIVATE_KEY }}
+      #- name: Checkout repo
+      #  uses: actions/checkout@v3
+      #  with:
+      #    repository: tjtelan/bot-test
+      #    token: ${{ steps.my-app.outputs.token }}
+
+      - name: Configure git user
+        run: |
+          git status
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      #- name: Add updates and rewrite commit message to branch ${{ env.GIT_BRANCH_NAME }}
+      #  run: |
+      #    git reset --soft HEAD~1
+
+      #    # This add is important in event CHANGELOG.md doesn't exist
+      #    git add CHANGELOG.md
+
+      #    # Warn: github.event.head_commit.message empty if job started via workflow_dispatch
+      #    git commit --all --message "${{ github.event.head_commit.message }}
+
+      #    Update CHANGELOG.md and/or MSRV badge from Github Actions
+      #    [actions skip]"
+      #    git status
+      #    git log -5
+
+      - name: Simulate merge for changelog
+        env:
+          prTitle: ${{ github.event.pull_request.title }}
+          prNumber: ${{ github.event.number }}
+        run: |
+          git checkout "$DEFAULT_BRANCH"
+          git commit -c --allow-empty -m "${prTitle} (#${prNumber})"
+          git log -5
+
+
+      - name: Generate a changelog
+        uses: orhun/git-cliff-action@v1
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: ${{ env.CHANGELOG_FILENAME }}
+      - name: Print the changelog
+        run: cat "${{ steps.git-cliff.outputs.changelog }}"
+      - name: Upload generated CHANGELOG
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.CHANGELOG_FILENAME }}
+          path: ${{ env.CHANGELOG_FILENAME }}
+          retention-days: 1
+
+  commit_changelog:
+    name: Commit ${{ env.CHANGELOG_FILENAME }} updates
+    runs-on: ubuntu-latest
+    permissions:
+      content: write
+    outputs:
+      changelog-update: ${{ steps.changelog-update-test.outputs.test }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download ${{ env.CHANGELOG_FILENAME }}
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.CHANGELOG_FILENAME }}
+          path: .
+
+      # Test if CHANGELOG.md needs to be updated
+      - name: Test if ${{ env.CHANGELOG_FILENAME }} needs updating in repo
+        id: changelog-update-test
+        run: |
+          git add $CHANGELOG_FILENAME
+          FILES_ADDED=$(git diff --cached --name-only | grep --count $CHANGELOG_FILENAME)
+          if [[ "$FILES_ADDED" -eq 1 ]]; then
+            OLD_COMMIT_MSG=$(git log --format=%B -n 1 HEAD)
+                git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
+            echo "::set-output name=test::true"
+          else
+                echo "No $CHANGELOG_FILENAME changes to commit"
+            echo "::set-output name=test::false"
+          fi
+
+      - name: Commit ${{ env.CHANGELOG_FILENAME }} to repo
+        run: |
+          git push
