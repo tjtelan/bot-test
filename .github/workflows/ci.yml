@@ -48,6 +48,7 @@ jobs:
           echo "Got PR number: ${PR_NUMBER}"
 
   generate_changelog:
+    needs: get_pr_number
     uses: ./.github/workflows/generate-changelog.yml
     with:
       event_name:  ${{ github.event_name }}
