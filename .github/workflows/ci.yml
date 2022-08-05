@@ -15,8 +15,28 @@ env:
 
 
 jobs:
+
+  get_pr_number_pr_event:
+    name: Get the PR number from PR event
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-linux
+    steps:
+      echo PR_NUMBER=${{ github.event.pull_request.number }} | tee $GITHUB_ENV
+
+  get_pr_number_push_event:
+    name: Get the PR number from Push event
+    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
+    env:
+      prTitle: ${{ github.event.commit.message }}
+    runs-on: ubuntu-linux
+    steps:
+      echo "PR_NUMBER=$( echo ${prTitle} | grep -Po (?<=\(#)\d(?=\)) )" | tee $GITHUB_ENV
+
   generate_changelog:
     uses: ./.github/workflows/generate-changelog.yml
+    with:
+      event_name:  ${{ github.event_name }}
+      pr_number: ${{ env.PR_NUMBER }}
 
   done:
     name: Done
