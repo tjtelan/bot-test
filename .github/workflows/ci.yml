@@ -15,16 +15,24 @@ env:
 
 
 jobs:
+  setup:
+    name: Setup
+    outputs:
+      branch-name: ${{ steps.extract-branch.outputs.name }}
+    steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract-branch
+
   generate_changelog:
-    uses: ./.github/workflows/generate-changelog.yml
-
-
-
+    needs: setup
+    uses: tjtelan/bot-test/.github/workflows/generate-changelog.yml@${{ needs.setup.outputs.branch-name }}
 
   done:
     name: Done
     if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
-    needs: 
+    needs:
       - generate_changelog
     runs-on: ubuntu-latest
     steps:
