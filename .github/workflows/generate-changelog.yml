@@ -103,7 +103,7 @@ jobs:
 
 
   commit_changelog:
-    name: Commit ${{ env.CHANGELOG_FILENAME }} updates
+    name: Commit updates
     runs-on: ubuntu-latest
     permissions:
       contents: write
