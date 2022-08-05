@@ -23,7 +23,12 @@ jobs:
       - name: Get PR number
         if: github.event_name == 'pull_request'
         run: |
-          echo "PR_NUMBER=${{ github.event.pull_request.number }}" | tee $GITHUB_ENV
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+      - name: set-shell-env
+        uses: lukka/set-shell-env@v1.1
+        with:
+        PR_NUMBER:  ${{ github.event.pull_request.number }}
+
 
   get_pr_number_push_event:
     name: Get the PR number from Push event
@@ -34,7 +39,7 @@ jobs:
       - name: Get PR number
         if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
         run: |
-          echo "PR_NUMBER=$( echo ${prTitle} | grep -Po (?<=\(#)\d(?=\)) )" | tee $GITHUB_ENV
+          echo "PR_NUMBER=$( echo ${prTitle} | grep -Po (?<=\(#)\d(?=\)) )" >> $GITHUB_ENV
 
   get_pr_number:
     name: Get a PR number
