@@ -45,14 +45,14 @@ jobs:
     steps:
       - name: Print PR number
         run: |
-          echo "Got PR number: ${PR_NUMBER}"
+          echo "Got PR number: ${{ env.PR_NUMBER }}"
 
   generate_changelog:
     needs: get_pr_number
     uses: ./.github/workflows/generate-changelog.yml
     with:
       event_name:  ${{ github.event_name }}
-      pr_number: ${PR_NUMBER}
+      pr_number: ${{ env.PR_NUMBER }}
 
   done:
     name: Done
