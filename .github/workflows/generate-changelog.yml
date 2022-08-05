@@ -106,7 +106,7 @@ jobs:
     name: Commit ${{ env.CHANGELOG_FILENAME }} updates
     runs-on: ubuntu-latest
     permissions:
-      content: write
+      contents: write
     steps:
       #- name: my-app-install token
       #  id: my-app
