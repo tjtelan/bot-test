@@ -32,7 +32,6 @@ jobs:
       prTitle: ${{ github.event.commit.message }}
     runs-on: ubuntu-linux
     steps:
-    steps:
       - name: Get PR number
         run: |
           echo "PR_NUMBER=$( echo ${prTitle} | grep -Po (?<=\(#)\d(?=\)) )" | tee $GITHUB_ENV
