@@ -15,8 +15,19 @@ env:
   CHANGELOG_FILENAME: CHANGELOG.md
 
 jobs:
+
+  print_inputs:
+    name: Print the inputs to the workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print
+        run: |
+          echo ${{ inputs.event_name }}
+          echo ${{ inputs.pr_number }}
+
   get_pr_info:
     name: Get the PR branch name and issue number
+    needs: print_inputs
     #outputs:
     #  pr_branch: ${{ steps.pr_info.outputs.name }}
     #  pr_number: ${{ steps.pr_info.outputs.number }
