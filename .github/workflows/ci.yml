@@ -16,7 +16,7 @@ env:
 
 jobs:
   generate_changelog:
-    uses: tjtelan/bot-test/.github/workflows/generate-changelog.yml@pr-7
+    uses: tjtelan/bot-test/.github/workflows/generate-changelog.yml@pr-8
 
   done:
     name: Done
