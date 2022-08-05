@@ -35,6 +35,10 @@ jobs:
     permissions: read-all
     runs-on: ubuntu-latest
     steps:
+
+      - name: Dump context
+        uses: crazy-max/ghaction-dump-context@v1.2.1
+
       - name: Checkout
         uses: actions/checkout@v3
 
