@@ -19,22 +19,30 @@ jobs:
   get_pr_number_pr_event:
     name: Get the PR number from PR event
     runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.pr.outputs.number }}
     steps:
       - name: Get PR number
+        id: number
         if: github.event_name == 'pull_request'
         run: |
           echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "::set-output name=number::$PR_NUMBER"
 
   get_pr_number_push_event:
     name: Get the PR number from Push event
     runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.pr.outputs.number }}
     env:
       prTitle: ${{ github.event.commit.message }}
     steps:
       - name: Get PR number
+        id: number
         if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
         run: |
           echo "PR_NUMBER=$( echo ${prTitle} | grep -Po (?<=\(#)\d(?=\)) )" >> $GITHUB_ENV
+          echo "::set-output name=number::$PR_NUMBER"
 
   get_pr_number:
     name: Get a PR number
@@ -48,7 +56,14 @@ jobs:
       - name: Print PR number
         id: pr
         run: |
+          echo $GITHUB_ENV
           echo "::set-output name=number::${PR_NUMBER}"
+
+          if [[ ${{ github.event_name == 'pull_request' }}]]; then
+            echo "::set-output name=number::${{ needs.get_pr_number_pr_event.outputs.number }}"
+          else
+            echo "::set-output name=number::${{ needs.get_pr_number_push_event.outputs.number }}"
+          fi
 
   generate_changelog:
     needs: get_pr_number
