@@ -40,7 +40,7 @@ jobs:
     uses: ./.github/workflows/generate-changelog.yml
     with:
       event_name:  ${{ github.event_name }}
-      pr_number: ${{ env.PR_NUMBER }}
+      pr_number: ${PR_NUMBER}
 
   done:
     name: Done
