@@ -31,7 +31,6 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
     env:
       prTitle: ${{ github.event.commit.message }}
-    runs-on: ubuntu-linux
     steps:
       - name: Get PR number
         run: |
