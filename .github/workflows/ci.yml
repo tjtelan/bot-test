@@ -17,6 +17,7 @@ env:
 jobs:
   setup:
     name: Setup
+    runs-on: ubuntu-latest
     outputs:
       branch-name: ${{ steps.extract-branch.outputs.name }}
     steps:
