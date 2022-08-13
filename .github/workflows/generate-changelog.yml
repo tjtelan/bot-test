@@ -170,24 +170,24 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      #- name: Get GH App token
-      #  id: app
-      #  uses: getsentry/action-github-app-token@v1
-      #  with:
-      #    app_id: ${{ secrets.APP_ID }}
-      #    private_key: ${{ secrets.APP_PRIVATE_KEY }}
-
       - name: Get GH App token
         id: app
-        uses: machine-learning-apps/actions-app-token@0.21
+        uses: getsentry/action-github-app-token@v1
         with:
-          APP_PEM: ${{ secrets.APP_PRIVATE_KEY }}
-          APP_ID: ${{ secrets.APP_ID }}
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      #- name: Get GH App token
+      #  id: app
+      #  uses: machine-learning-apps/actions-app-token@0.21
+      #  with:
+      #    APP_PEM: ${{ secrets.APP_PRIVATE_KEY }}
+      #    APP_ID: ${{ secrets.APP_ID }}
 
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          token: ${{ steps.app.outputs.app_token }}
+          token: ${{ steps.app.outputs.token }}
 
       #- name: Checkout
       #  uses: actions/checkout@v3
