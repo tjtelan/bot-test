@@ -176,10 +176,10 @@ jobs:
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          #repository: tjtelan/bot-test
           token: ${{ steps.app.outputs.token }}
 
       #- name: Checkout
@@ -192,7 +192,7 @@ jobs:
       #  id: git-branch-name
       #  uses: EthanSK/git-branch-name-action@v1
 
-      - name: Download ${{ env.CHANGELOG_FILENAME }}
+      - name: Download $CHANGELOG_FILENAME
         uses: actions/download-artifact@v2
         with:
           name: ${{ env.CHANGELOG_FILENAME }}
