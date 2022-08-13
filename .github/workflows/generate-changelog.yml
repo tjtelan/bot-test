@@ -230,5 +230,5 @@ jobs:
           message: |
             Updating changelog before staging build
             bors r+
-          repo-token: ${{ steps.app.outputs.app_token }}
+          repo-token: ${{ steps.app.outputs.token }}
           repo-token-user-login: "github-actions[bot]"
