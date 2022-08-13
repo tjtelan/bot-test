@@ -82,8 +82,8 @@ jobs:
     name: Generate changelog
     runs-on: ubuntu-latest
     needs: get_pr_info
-    outputs:
-      needs-commit: ${{steps.repo-check.outputs.result}}
+    #outputs:
+    #  needs-commit: ${{steps.repo-check.outputs.result}}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -111,7 +111,7 @@ jobs:
       #    git log -5
 
       - name: Simulate merge for changelog
-        if: needs.generate_changelog.outputs.needs-commit == 'true'
+        #if: needs.generate_changelog.outputs.needs-commit == 'true'
         env:
           defaultBranch: ${{ github.event.repository.default_branch }}
           prNumber: ${{ env.PR_NUMBER }}
