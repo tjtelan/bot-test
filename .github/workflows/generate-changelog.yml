@@ -15,7 +15,6 @@ env:
   CHANGELOG_FILENAME: CHANGELOG.md
 
 jobs:
-
   print_inputs:
     name: Print the inputs to the workflow
     runs-on: ubuntu-latest
@@ -35,7 +34,6 @@ jobs:
     permissions: read-all
     runs-on: ubuntu-latest
     steps:
-
       - name: Dump context
         uses: crazy-max/ghaction-dump-context@v1.2.1
 
@@ -59,13 +57,11 @@ jobs:
       - name: Get PR info from push event
         if: inputs.event_name == 'push'
         run: |
-          gh auth login < ${{ secrets.GITHUB_TOKEN }}
+          gh auth login --with-token < <(echo ${{ secrets.GITHUB_TOKEN }})
           gh pr checkout ${{ inputs.pr_number }}
           echo "PR_BRANCH=$(git rev-parse --abbrev-ref HEAD)" | tee $GITHUB_ENV
           echo "PR_NUMBER=${{ inputs.pr_number }}" | tee $GITHUB_ENV
           echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')" | tee $GITHUB_ENV
-
-
 
   ## If this is staging, check if the Changelog is up to date first
   ## if not, update it. This will end up with Bors cancelling the test
@@ -74,7 +70,6 @@ jobs:
   #    name: Check if Changelog is up to date before running merge CI
   #    runs-on: ubuntu-latest
   #    steps:
-
 
   # If event is workflow_dispatch, just add note that CHANGELOG.md was updated
   # If event is workflow_call, then
@@ -165,8 +160,6 @@ jobs:
             echo "::set-output name=result::false"
           fi
 
-
-
   commit_changelog:
     name: Commit updates
     runs-on: ubuntu-latest
@@ -189,7 +182,6 @@ jobs:
       #    repository: tjtelan/bot-test
       #    token: ${{ steps.my-app.outputs.token }}
 
-
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -210,21 +202,26 @@ jobs:
       #  id: git-branch-name
       #  uses: EthanSK/git-branch-name-action@v1
 
+      #- name: Commit ${{ env.CHANGELOG_FILENAME }} to repo
+      #  if: needs.generate_changelog.output.needs-commit == 'true'
+      #  run: |
+      #    gh auth login < ${{ secrets.GITHUB_TOKEN }}
+      #    gh pr checkout ${{ inputs.pr_number }}
 
+      #    git add ${{ env.CHANGELOG_FILENAME }}
+      #    git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
+      #    git push
 
       - name: Commit ${{ env.CHANGELOG_FILENAME }} to repo
-        if: needs.generate_changelog.output.needs-commit == 'true'
-        run: |
-          gh auth login < ${{ secrets.GITHUB_TOKEN }}
-          gh pr checkout ${{ inputs.pr_number }}
-
-          git add ${{ env.CHANGELOG_FILENAME }}
-          git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
-          git push
+        uses: stefanzweifel/git-auto-commit-action@v4.14.1
+        with:
+          commit_message: "Updating $CHANGELOG_FILENAME [actions skip]"
 
       - name: Add PR Comment
         uses: mshick/add-pr-comment@v1
         with:
-          message: bors retry
+          message: |
+            Updating changelog before staging build
+            bors r+
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          repo-token-user-login: 'github-actions[bot]'
+          repo-token-user-login: "github-actions[bot]"
