@@ -50,18 +50,18 @@ jobs:
       - name: Set outputs
         if: inputs.event_name == 'pull_request'
         run: |
-          echo "PR_BRANCH=${{ steps.info.outputs.head_branch}}" | tee $GITHUB_ENV
-          echo "PR_NUMBER=${{ steps.info.outputs.number}}" | tee $GITHUB_ENV
-          echo "PR_TITLE=${{ steps.info.outputs.title}}" | tee $GITHUB_ENV
+          echo "PR_BRANCH=${{ steps.info.outputs.head_branch}}" >> $GITHUB_ENV
+          echo "PR_NUMBER=${{ steps.info.outputs.number}}" >> $GITHUB_ENV
+          echo "PR_TITLE=${{ steps.info.outputs.title}}" >> $GITHUB_ENV
 
       - name: Get PR info from push event
         if: inputs.event_name == 'push'
         run: |
           gh auth login --with-token < <(echo ${{ secrets.GITHUB_TOKEN }})
           gh pr checkout ${{ inputs.pr_number }}
-          echo "PR_BRANCH=$(git rev-parse --abbrev-ref HEAD)" | tee $GITHUB_ENV
-          echo "PR_NUMBER=${{ inputs.pr_number }}" | tee $GITHUB_ENV
-          echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')" | tee $GITHUB_ENV
+          echo "PR_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+          echo "PR_NUMBER=${{ inputs.pr_number }}" >> $GITHUB_ENV
+          echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')" >> $GITHUB_ENV
 
   ## If this is staging, check if the Changelog is up to date first
   ## if not, update it. This will end up with Bors cancelling the test
