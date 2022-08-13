@@ -170,23 +170,23 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      #- name: my-app-install token
-      #  id: my-app
-      #  uses: getsentry/action-github-app-token@v1
-      #  with:
-      #    app_id: ${{ secrets.APP_ID }}
-      #    private_key: ${{ secrets.APP_PRIVATE_KEY }}
-      #- name: Checkout repo
-      #  uses: actions/checkout@v3
-      #  with:
-      #    repository: tjtelan/bot-test
-      #    token: ${{ steps.my-app.outputs.token }}
-
-      - name: Checkout
+      - name: Get GH App token
+        id: app
+        uses: getsentry/action-github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          #repository: tjtelan/bot-test
+          token: ${{ steps.app.outputs.token }}
+
+      #- name: Checkout
+      #  uses: actions/checkout@v3
+      #  with:
+      #    fetch-depth: 0
+      #    token: ${{ secrets.GITHUB_TOKEN }}
 
       #- name: Git branch name
       #  id: git-branch-name
