@@ -21,8 +21,8 @@ jobs:
     steps:
       - name: Print
         run: |
-          echo ${{ inputs.event_name }}
-          echo ${{ inputs.pr_number }}
+          echo event name: ${{ inputs.event_name }}
+          echo pr number: ${{ inputs.pr_number }}
 
   get_pr_info:
     name: Get the PR branch name and issue number
@@ -57,8 +57,6 @@ jobs:
       - name: Get PR info from push event
         if: inputs.event_name == 'push'
         run: |
-          gh auth login --with-token < <(echo ${{ secrets.GITHUB_TOKEN }})
-          gh pr checkout ${{ inputs.pr_number }}
           echo "PR_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
           echo "PR_BRANCH=$(git rev-parse --abbrev-ref HEAD)"
           echo "PR_NUMBER=${{ inputs.pr_number }}" >> $GITHUB_ENV
@@ -67,6 +65,8 @@ jobs:
           echo "PR_TITLE=${{ github.event.head_commit.message }}
           ##echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')" >> $GITHUB_ENV
           ##echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')"
+          gh auth login --with-token < <(echo ${{ secrets.GITHUB_TOKEN }})
+          gh pr checkout ${{ inputs.pr_number }}
 
   ## If this is staging, check if the Changelog is up to date first
   ## if not, update it. This will end up with Bors cancelling the test
