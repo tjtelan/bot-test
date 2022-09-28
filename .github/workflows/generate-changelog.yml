@@ -62,7 +62,7 @@ jobs:
           echo "PR_NUMBER=${{ inputs.pr_number }}" >> $GITHUB_ENV
           echo "PR_NUMBER=${{ inputs.pr_number }}"
           echo "PR_TITLE=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
-          echo "PR_TITLE=${{ github.event.head_commit.message }}
+          echo "PR_TITLE=${{ github.event.head_commit.message }}"
           ##echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')" >> $GITHUB_ENV
           ##echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')"
           gh auth login --with-token < <(echo ${{ secrets.GITHUB_TOKEN }})
@@ -217,6 +217,7 @@ jobs:
 
       - name: Check repo
         run: |
+          git add ${{ env.CHANGELOG_FILENAME }
           ls
           git status
 
