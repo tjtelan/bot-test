@@ -13,6 +13,7 @@ on:
 
 env:
   CHANGELOG_FILENAME: CHANGELOG.md
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   print_inputs:
