@@ -150,7 +150,7 @@ jobs:
           config: cliff.toml
           args: --verbose
         env:
-          OUTPUT: /tmp/${{ env.CHANGELOG_FILENAME }}
+          OUTPUT: ${{ env.CHANGELOG_FILENAME }}
       - name: Print the changelog
         run: cat "${{ steps.git-cliff.outputs.changelog }}"
       - name: Upload generated CHANGELOG
