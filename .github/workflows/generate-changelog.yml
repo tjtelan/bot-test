@@ -98,8 +98,8 @@ jobs:
     name: Generate changelog
     runs-on: ubuntu-latest
     needs: get_pr_info
-    #outputs:
-    #  needs-commit: ${{steps.repo-check.outputs.result}}
+    outputs:
+      needs-commit: ${{steps.repo-check.outputs.result}}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -110,6 +110,9 @@ jobs:
           git status
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Dump context
+        uses: crazy-max/ghaction-dump-context@v1.2.1
 
       #- name: Add updates and rewrite commit message to branch ${{ env.GIT_BRANCH_NAME }}
       #  run: |
@@ -135,7 +138,7 @@ jobs:
         run: |
           gh pr checkout ${{ needs.get_pr_info.outputs.pr_number }}
           git pull
-          git commit --all --allow-empty -m "${{ needs.get_pr_info.outputs.pr_title }} (#${{ needs.get_pr_info.outputs.pr_number }}"
+          git commit --all --allow-empty -m "${{ needs.get_pr_info.outputs.pr_title }} (#${{ needs.get_pr_info.outputs.pr_number }})"
           git log -5
 
       - name: Generate a changelog
@@ -178,6 +181,7 @@ jobs:
 
   commit_changelog:
     name: Commit updates
+    if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     needs:
       - get_pr_info
@@ -205,6 +209,9 @@ jobs:
         with:
           token: ${{ steps.app.outputs.token }}
           fetch-depth: 0
+
+      - name: Dump context
+        uses: crazy-max/ghaction-dump-context@v1.2.1
 
       #- name: Checkout
       #  uses: actions/checkout@v3
