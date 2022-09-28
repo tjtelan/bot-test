@@ -1,76 +1,76 @@
-name: Post PR 
+name: Post PR
 
 on:
-  push:
-    branches: [main]
+  #push:
+  #  branches: [main]
   workflow_dispatch:
 jobs:
   generate_changelog:
     name: Generate changelog
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Generate a changelog
-      uses: orhun/git-cliff-action@v1
-      id: git-cliff
-      with:
-        config: cliff.toml
-        args: --verbose
-      env:
-        OUTPUT: CHANGELOG.md
-    - uses: actions/upload-artifact@v3
-      with:
-        name: CHANGELOG.md
-        path: CHANGELOG.md 
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Generate a changelog
+        uses: orhun/git-cliff-action@v1
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG.md
+      - uses: actions/upload-artifact@v3
+        with:
+          name: CHANGELOG.md
+          path: CHANGELOG.md
   squash_to_previous_commit:
     name: Add generated files to PR commit
     runs-on: ubuntu-latest
     needs:
       - generate_changelog
     steps:
-    - name: my-app-install token
-      id: my-app
-      uses: getsentry/action-github-app-token@v1
-      with:
-        app_id: ${{ secrets.APP_ID }}
-        private_key: ${{ secrets.APP_PRIVATE_KEY }}
-    - name: Checkout private repo
-      uses: actions/checkout@v3
-      with:
-        repository: tjtelan/bot-test
-        token: ${{ steps.my-app.outputs.token }}
-        fetch-depth: 0
-    - name: Git branch name
-      id: git-branch-name
-      uses: EthanSK/git-branch-name-action@v1
-    - uses: actions/download-artifact@v3
-      with:
-        name: CHANGELOG.md
-        path: .
-    - name: Configure git user 
-      run: |
-        git status
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-    - name: Add updates and rewrite commit message to branch ${{ env.GIT_BRANCH_NAME }}
-      run: |
-        git reset --soft HEAD~1
-        
-        # This add is important in event CHANGELOG.md doesn't exist
-        git add CHANGELOG.md
-        
-        # Warn: github.event.head_commit.message empty if job started via workflow_dispatch
-        git commit --all --message "${{ github.event.head_commit.message }}
-        
-        Update CHANGELOG.md and/or MSRV badge from Github Actions
-        [actions skip]"
-        git status
+      - name: my-app-install token
+        id: my-app
+        uses: getsentry/action-github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: Checkout private repo
+        uses: actions/checkout@v3
+        with:
+          repository: tjtelan/bot-test
+          token: ${{ steps.my-app.outputs.token }}
+          fetch-depth: 0
+      - name: Git branch name
+        id: git-branch-name
+        uses: EthanSK/git-branch-name-action@v1
+      - uses: actions/download-artifact@v3
+        with:
+          name: CHANGELOG.md
+          path: .
+      - name: Configure git user
+        run: |
+          git status
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Add updates and rewrite commit message to branch ${{ env.GIT_BRANCH_NAME }}
+        run: |
+          git reset --soft HEAD~1
 
-        git push --force-with-lease
-        git log -5
+          # This add is important in event CHANGELOG.md doesn't exist
+          git add CHANGELOG.md
+
+          # Warn: github.event.head_commit.message empty if job started via workflow_dispatch
+          git commit --all --message "${{ github.event.head_commit.message }}
+
+          Update CHANGELOG.md and/or MSRV badge from Github Actions
+          [actions skip]"
+          git status
+
+          git push --force-with-lease
+          git log -5
     #- name: Pushing to the protected branch ${{ env.GIT_BRANCH_NAME }}
     #  uses: tjtelan/push-protected@main
     #  with:
