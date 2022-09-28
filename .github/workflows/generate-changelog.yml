@@ -29,8 +29,8 @@ jobs:
     needs: print_inputs
     outputs:
       pr_branch: ${{ steps.pr_info.outputs.name }}
-      pr_number: ${{ steps.pr_info.outputs.number }
-      pr_title: ${{ steps.pr_info.outputs.title }
+      pr_number: ${{ steps.pr_info.outputs.number }}
+      pr_title: ${{ steps.pr_info.outputs.title }}
     permissions: read-all
     runs-on: ubuntu-latest
     steps:
