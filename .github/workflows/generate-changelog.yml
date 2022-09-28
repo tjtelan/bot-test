@@ -266,6 +266,7 @@ jobs:
       #    git push
 
       - name: Commit ${{ env.CHANGELOG_FILENAME }} to repo
+        id: auto-commit-action
         uses: stefanzweifel/git-auto-commit-action@v4.14.1
         with:
           commit_message: "Updating ${{ env.CHANGELOG_FILENAME }} [actions skip]"
