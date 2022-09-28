@@ -63,8 +63,10 @@ jobs:
           echo "PR_BRANCH=$(git rev-parse --abbrev-ref HEAD)"
           echo "PR_NUMBER=${{ inputs.pr_number }}" >> $GITHUB_ENV
           echo "PR_NUMBER=${{ inputs.pr_number }}"
-          echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')" >> $GITHUB_ENV
-          echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')"
+          echo "PR_TITLE=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
+          echo "PR_TITLE=${{ github.event.head_commit.message }}
+          ##echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')" >> $GITHUB_ENV
+          ##echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')"
 
   ## If this is staging, check if the Changelog is up to date first
   ## if not, update it. This will end up with Bors cancelling the test
