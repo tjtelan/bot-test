@@ -271,12 +271,12 @@ jobs:
           commit_message: "Updating ${{ env.CHANGELOG_FILENAME }} [actions skip]"
 
       - name: Wait up to a minute for Bors to cancel if ${{ env.CHANGELOG_FILENAME }} was updated
-        if: steps.auto-commit-action.outputs.changes_detected == 'true'
+        if: ${{ steps.auto-commit-action.outputs.changes_detected == 'true' }}
         run: |
           sleep 60
 
       - name: Add PR Comment
-        if: cancelled() && steps.auto-commit-action.outputs.changes_detected == 'true'
+        if: ${{ cancelled() && steps.auto-commit-action.outputs.changes_detected == 'true' }}
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
         run: |
