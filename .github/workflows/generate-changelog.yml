@@ -271,16 +271,12 @@ jobs:
         with:
           commit_message: "Updating ${{ env.CHANGELOG_FILENAME }} [actions skip]"
 
-      - name: Wait up to a minute for Bors to cancel if ${{ env.CHANGELOG_FILENAME }} was updated
+      - name: Wait 30s, then Add PR Comment
         if: ${{ steps.auto-commit-action.outputs.changes_detected == 'true' }}
-        run: |
-          sleep 60
-
-      - name: Add PR Comment
-        if: ${{ cancelled() && steps.auto-commit-action.outputs.changes_detected == 'true' }}
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
         run: |
+          sleep 30
           printf "Updating changelog before staging build.\nbors r+" | gh pr comment ${{ needs.get_pr_info.outputs.pr_number }} --body-file -
 
       #- name: Add PR Comment
