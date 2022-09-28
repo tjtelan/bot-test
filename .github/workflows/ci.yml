@@ -71,13 +71,13 @@ jobs:
         run: |
           cat $GITHUB_ENV
 
-          if [[ ${{ github.event_name == 'pull_request' = 'true' }} ]]; then
+          if [[ ${{ github.event_name == 'pull_request' }}  = 'true' ]]; then
             NUMBER=${{ needs.get_pr_number_pr_event.outputs.pr_number }}
             echo "PR number is: $NUMBER"
             echo "::set-output name=number::$NUMBER"
           fi
 
-          if [[ ${{ github.event_name == 'push'  = 'true' }} ]]; then
+          if [[ ${{ github.event_name == 'push' }}  = 'true' ]]; then
             NUMBER=${{ needs.get_pr_number_push_event.outputs.pr_number }}
             echo "PR number is: $NUMBER"
             echo "::set-output name=number::$NUMBER"
