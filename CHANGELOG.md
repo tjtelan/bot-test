@@ -30,7 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Trying workflow_call ([#6](https://github.com/tjtelan/git-url-parse-rs/issues/6))
 - Playing w/ branches ([#7](https://github.com/tjtelan/git-url-parse-rs/issues/7))
 - Outputs ([#8](https://github.com/tjtelan/git-url-parse-rs/issues/8))
-- Initial verify that we commit to the correct branch ([#9](https://github.com/tjtelan/git-url-parse-rs/issues/9)) (#'9')
+- Initial verify that we commit to the correct branch ([#9](https://github.com/tjtelan/git-url-parse-rs/issues/9))
+- Try to move everything into workflow_call ([#10](https://github.com/tjtelan/git-url-parse-rs/issues/10))
 
 ### Other
 
