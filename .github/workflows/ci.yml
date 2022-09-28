@@ -72,9 +72,9 @@ jobs:
           echo $GITHUB_ENV
 
           if [[ ${{ github.event_name == 'pull_request' }} ]]; then
-            NUMBER=${{ github.event.number }}
+            NUMBER=${{ needs.get_pr_number_pr_event.outputs.pr_number }}
           else
-            NUMBER=$( echo '${{ github.event.head_commit.message }}' | tr -cd [:digit:] )
+            NUMBER={{ needs.get_pr_number_push_event.outputs.pr_number }}
           fi
 
           echo "PR number is: $NUMBER"
