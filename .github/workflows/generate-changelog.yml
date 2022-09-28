@@ -215,6 +215,12 @@ jobs:
           token: ${{ steps.app.outputs.token }}
           fetch-depth: 0
 
+      - name: Configure git user
+        run: |
+          git status
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Dump context
         uses: crazy-max/ghaction-dump-context@v1.2.1
 
@@ -267,10 +273,16 @@ jobs:
           commit_message: "Updating ${{ env.CHANGELOG_FILENAME }} [actions skip]"
 
       - name: Add PR Comment
-        uses: mshick/add-pr-comment@v1
-        with:
-          message: |
-            Updating changelog before staging build
-            bors r+
-          repo-token: ${{ steps.app.outputs.token }}
-          repo-token-user-login: "github-actions[bot]"
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+        run: |
+          printf "Updating changelog before staging build.\nbors r+" | gh pr comment ${{ needs.get_pr_info.outputs.pr_number }} --body-file -
+
+      #- name: Add PR Comment
+      #  uses: mshick/add-pr-comment@v1
+      #  with:
+      #    message: |
+      #      Updating changelog before staging build
+      #      bors r+
+      #    repo-token: ${{ steps.app.outputs.token }}
+      #    repo-token-user-login: "github-actions[bot]"
