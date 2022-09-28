@@ -217,7 +217,7 @@ jobs:
 
       - name: Check repo
         run: |
-          git add ${{ env.CHANGELOG_FILENAME }
+          git add ${{ env.CHANGELOG_FILENAME }}
           ls
           git status
 
