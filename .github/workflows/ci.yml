@@ -15,12 +15,8 @@ env:
 
 jobs:
   update_changelog:
-    needs: get_pr_number
     uses: ./.github/workflows/update-changelog.yml
     secrets: inherit
-    with:
-      event_name: ${{ github.event_name }}
-      pr_number: ${{ needs.get_pr_number.outputs.pr_number }}
 
   done:
     name: Done
