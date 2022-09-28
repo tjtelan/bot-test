@@ -29,8 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       pr_number: ${{ steps.pr.outputs.number }}
-    #env:
-    #  prTitle: ${{ github.event.head_commit.message }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -48,7 +46,7 @@ jobs:
           echo "::set-output name=number::$NUMBER"
 
   get_pr_number:
-    name: Get a PR number
+    name: Get PR number from event
     runs-on: ubuntu-latest
     needs:
       - get_pr_number_pr_event
@@ -56,8 +54,8 @@ jobs:
     outputs:
       pr_number: ${{ steps.pr.outputs.number }}
     steps:
-      - name: Dump context
-        uses: crazy-max/ghaction-dump-context@v1.2.1
+      #- name: Dump context
+      #  uses: crazy-max/ghaction-dump-context@v1.2.1
 
       - name: Print PR number
         id: pr
@@ -101,16 +99,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # This will only work in PRs
       - name: Get PR info from pull request event
         if: github.event_name == 'pull_request'
         id: info
         uses: Brymastr/pr-info-action@v1
 
-      - name: Dump context
-        uses: crazy-max/ghaction-dump-context@v1.2.1
+      #- name: Dump context
+      #  uses: crazy-max/ghaction-dump-context@v1.2.1
 
-      - name: Set outputs
+      - name: Set outputs from pull request event
         if: github.event_name == 'pull_request'
         run: |
           echo "PR_BRANCH=${{ steps.info.outputs.head_branch }}" >> $GITHUB_ENV
@@ -134,7 +131,7 @@ jobs:
           gh auth login --with-token < <(echo ${{ secrets.GITHUB_TOKEN }})
           gh pr checkout ${{ needs.get_pr_number.outputs.pr_number }}
 
-      - name: Set outputs
+      - name: Set outputs from push event
         id: pr_info
         run: |
           echo "::set-output name=name::$PR_BRANCH"
@@ -146,27 +143,10 @@ jobs:
           echo "::set-output name=title::$PR_TITLE"
           echo "pr title is: $PR_TITLE"
 
-  ## If this is staging, check if the Changelog is up to date first
-  ## if not, update it. This will end up with Bors cancelling the test
-  ## Comment in PR to restart the test
-  #  changelog_premerge_check:
-  #    name: Check if Changelog is up to date before running merge CI
-  #    runs-on: ubuntu-latest
-  #    steps:
-
-  # If event is workflow_dispatch, just add note that CHANGELOG.md was updated
-  # If event is workflow_call, then
-
-  # Check if this is PR run or a Bors staging run
-  # If PR run, we can reuse the title and PR number
-  # Otherwise, we will reuse the commit message
-
   generate_changelog:
     name: Generate changelog
     runs-on: ubuntu-latest
     needs: get_pr_info
-    #outputs:
-    #  needs-commit: ${{steps.repo-check.outputs.result}}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -178,30 +158,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Dump context
-        uses: crazy-max/ghaction-dump-context@v1.2.1
+      #- name: Dump context
+      #  uses: crazy-max/ghaction-dump-context@v1.2.1
 
-      #- name: Add updates and rewrite commit message to branch ${{ env.GIT_BRANCH_NAME }}
-      #  run: |
-      #    git reset --soft HEAD~1
-
-      #    # This add is important in event CHANGELOG.md doesn't exist
-      #    git add CHANGELOG.md
-
-      #    # Warn: github.event.head_commit.message empty if job started via workflow_dispatch
-      #    git commit --all --message "${{ github.event.head_commit.message }}
-
-      #    Update CHANGELOG.md and/or MSRV badge from Github Actions
-      #    [actions skip]"
-      #    git status
-      #    git log -5
-
-      - name: Simulate new changelog update
-        #if: needs.generate_changelog.outputs.needs-commit == 'true'
-        #env:
-        #  defaultBranch: ${{ github.event.repository.default_branch }}
-        #  prNumber: ${{ env.PR_NUMBER }}
-        #  prTitle: ${{ env.PR_TITLE }}
+      - name: Simulate PR merge for changelog updates
         run: |
           git checkout main
           #git commit --all --allow-empty -m "${{ needs.get_pr_info.outputs.pr_title }} (#${{ needs.get_pr_info.outputs.pr_number }})"
@@ -225,32 +185,6 @@ jobs:
           path: ${{ env.CHANGELOG_FILENAME }}
           retention-days: 1
 
-      #- name: Reset
-      #  env:
-      #    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #  run: |
-      #    git reset HEAD --hard
-      #    gh pr checkout ${{ needs.get_pr_info.outputs.pr_number }}
-      #    cp /tmp
-
-      ## Test if CHANGELOG.md needs to be updated
-      #- name: Test if ${{ env.CHANGELOG_FILENAME }} needs updating in repo
-      #  id: repo-check
-      #  run: |
-      #    git add $CHANGELOG_FILENAME
-      #    git status
-      #    FILES_ADDED=$(git diff --cached --name-only | grep --count $CHANGELOG_FILENAME)
-      #    echo found #$FILES_ADDED files changed
-
-      #    if [[ "$FILES_ADDED" -eq 1 ]]; then
-      #      echo "Need to update $CHANGELOG_FILENAME"
-      #      git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
-      #      #echo "::set-output name=result::true"
-      #    else
-      #      echo "No $CHANGELOG_FILENAME changes to commit"
-      #      #echo "::set-output name=result::false"
-      #    fi
-
   commit_changelog:
     name: Commit updates
     if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
@@ -269,31 +203,14 @@ jobs:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      #- name: Get GH App token
-      #  id: app
-      #  uses: machine-learning-apps/actions-app-token@0.21
-      #  with:
-      #    APP_PEM: ${{ secrets.APP_PRIVATE_KEY }}
-      #    APP_ID: ${{ secrets.APP_ID }}
-
       - name: Checkout
         uses: actions/checkout@v3
         with:
           token: ${{ steps.app.outputs.token }}
           fetch-depth: 0
 
-      - name: Dump context
-        uses: crazy-max/ghaction-dump-context@v1.2.1
-
-      #- name: Checkout
-      #  uses: actions/checkout@v3
-      #  with:
-      #    fetch-depth: 0
-      #    token: ${{ secrets.GITHUB_TOKEN }}
-
-      #- name: Git branch name
-      #  id: git-branch-name
-      #  uses: EthanSK/git-branch-name-action@v1
+      #- name: Dump context
+      #  uses: crazy-max/ghaction-dump-context@v1.2.1
 
       - name: Checkout PR branch
         env:
@@ -309,44 +226,22 @@ jobs:
           name: ${{ env.CHANGELOG_FILENAME }}
           path: .
 
-      - name: Check repo
-        run: |
-          ls
-          git status
-
-      #- name: Git branch name
-      #  id: git-branch-name
-      #  uses: EthanSK/git-branch-name-action@v1
-
-      #- name: Commit ${{ env.CHANGELOG_FILENAME }} to repo
-      #  if: needs.generate_changelog.output.needs-commit == 'true'
+      #- name: Check repo
       #  run: |
-      #    gh auth login < ${{ secrets.GITHUB_TOKEN }}
-      #    gh pr checkout ${{ inputs.pr_number }}
+      #    ls
+      #    git status
 
-      #    git add ${{ env.CHANGELOG_FILENAME }}
-      #    git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
-      #    git push
-
-      - name: Commit ${{ env.CHANGELOG_FILENAME }} to repo
+      - name: Commit any updates to ${{ env.CHANGELOG_FILENAME }}
         id: auto-commit-action
         uses: stefanzweifel/git-auto-commit-action@v4.14.1
         with:
           commit_message: "Updating ${{ env.CHANGELOG_FILENAME }} [actions skip]"
 
-      - name: Wait 15s, then Add PR Comment
+      - name: Wait, then restart Bors and label PR
         if: ${{ steps.auto-commit-action.outputs.changes_detected == 'true' }}
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
         run: |
           sleep 15
+          gh pr edit ${{ needs.get_pr_info.outputs.pr_number }} --add-label bot
           printf "Updated changelog before staging build.\nbors r+" | gh pr comment ${{ needs.get_pr_info.outputs.pr_number }} --body-file -
-
-      #- name: Add PR Comment
-      #  uses: mshick/add-pr-comment@v1
-      #  with:
-      #    message: |
-      #      Updating changelog before staging build
-      #      bors r+
-      #    repo-token: ${{ steps.app.outputs.token }}
-      #    repo-token-user-login: "github-actions[bot]"
