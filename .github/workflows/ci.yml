@@ -22,7 +22,7 @@ jobs:
     name: Done
     if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
     needs:
-      - generate_changelog
+      - update_changelog
     runs-on: ubuntu-latest
     steps:
       - name: Done
