@@ -27,10 +27,10 @@ jobs:
   get_pr_info:
     name: Get the PR branch name and issue number
     needs: print_inputs
-    #outputs:
-    #  pr_branch: ${{ steps.pr_info.outputs.name }}
-    #  pr_number: ${{ steps.pr_info.outputs.number }
-    #  pr_title: ${{ steps.pr_info.outputs.title }
+    outputs:
+      pr_branch: ${{ steps.pr_info.outputs.name }}
+      pr_number: ${{ steps.pr_info.outputs.number }
+      pr_title: ${{ steps.pr_info.outputs.title }
     permissions: read-all
     runs-on: ubuntu-latest
     steps:
@@ -57,16 +57,26 @@ jobs:
       - name: Get PR info from push event
         if: inputs.event_name == 'push'
         run: |
-          echo "PR_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
-          echo "PR_BRANCH=$(git rev-parse --abbrev-ref HEAD)"
-          echo "PR_NUMBER=${{ inputs.pr_number }}" >> $GITHUB_ENV
-          echo "PR_NUMBER=${{ inputs.pr_number }}"
-          echo "PR_TITLE=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
-          echo "PR_TITLE=${{ github.event.head_commit.message }}"
-          ##echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')" >> $GITHUB_ENV
-          ##echo "PR_TITLE=$(git log -n 1 --pretty=format:'%s')"
+          echo "PR_BRANCH='$(git rev-parse --abbrev-ref HEAD)'" >> $GITHUB_ENV
+          echo "PR_BRANCH='$(git rev-parse --abbrev-ref HEAD)'"
+          echo "PR_NUMBER='${{ inputs.pr_number }}'" >> $GITHUB_ENV
+          echo "PR_NUMBER='${{ inputs.pr_number }}'"
+          echo "PR_TITLE='${{ github.event.head_commit.message }}'" >> $GITHUB_ENV
+          echo "PR_TITLE='${{ github.event.head_commit.message }}'"
           gh auth login --with-token < <(echo ${{ secrets.GITHUB_TOKEN }})
           gh pr checkout ${{ inputs.pr_number }}
+
+      - name: Set outputs
+        id: pr_info
+        run: |
+          echo "::set-output name=name::$PR_BRANCH"
+          echo "pr branch is: $PR_BRANCH"
+
+          echo "::set-output name=number::$PR_NUMBER"
+          echo "pr number is: $PR_NUMBER"
+
+          echo "::set-output name=title::$PR_TITLE"
+          echo "pr title is: $PR_TITLE"
 
   ## If this is staging, check if the Changelog is up to date first
   ## if not, update it. This will end up with Bors cancelling the test
@@ -122,9 +132,9 @@ jobs:
         #  prNumber: ${{ env.PR_NUMBER }}
         #  prTitle: ${{ env.PR_TITLE }}
         run: |
-          git checkout "${{ github.event.repository.default_branch }}"
+          gh pr checkout ${{ needs.get_pr_info.outputs.pr_number }}
           git pull
-          git commit --all --allow-empty -m "${{ env.PR_TITLE }} (#${{ env.PR_NUMBER }}"
+          git commit --all --allow-empty -m "${{ needs.get_pr_info.outputs.pr_title }} (#${{ needs.get_pr_info.outputs.pr_number }}"
           git log -5
 
       - name: Generate a changelog
@@ -147,7 +157,7 @@ jobs:
       - name: Reset
         run: |
           git reset HEAD --hard
-          git checkout ${{ env.PR_BRANCH }}
+          gh pr checkout ${{ needs.get_pr_info.outputs.pr_number }}
 
       # Test if CHANGELOG.md needs to be updated
       - name: Test if ${{ env.CHANGELOG_FILENAME }} needs updating in repo
@@ -189,10 +199,11 @@ jobs:
       #    APP_PEM: ${{ secrets.APP_PRIVATE_KEY }}
       #    APP_ID: ${{ secrets.APP_ID }}
 
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           token: ${{ steps.app.outputs.token }}
+          fetch-depth: 0
 
       #- name: Checkout
       #  uses: actions/checkout@v3
@@ -204,8 +215,9 @@ jobs:
       #  id: git-branch-name
       #  uses: EthanSK/git-branch-name-action@v1
 
-      - name: Check repo
+      - name: Checkout PR branch
         run: |
+          gh pr checkout ${{ needs.get_pr_info.outputs.pr_number }}
           ls
           git status
 
@@ -217,7 +229,6 @@ jobs:
 
       - name: Check repo
         run: |
-          git add ${{ env.CHANGELOG_FILENAME }}
           ls
           git status
 
