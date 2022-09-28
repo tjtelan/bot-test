@@ -34,9 +34,6 @@ jobs:
     permissions: read-all
     runs-on: ubuntu-latest
     steps:
-      - name: Dump context
-        uses: crazy-max/ghaction-dump-context@v1.2.1
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -45,6 +42,9 @@ jobs:
         if: inputs.event_name == 'pull_request'
         id: info
         uses: Brymastr/pr-info-action@v1
+
+      - name: Dump context
+        uses: crazy-max/ghaction-dump-context@v1.2.1
 
       # TODO: figure this out when bors gets here
       - name: Set outputs
@@ -137,9 +137,11 @@ jobs:
         #  prNumber: ${{ env.PR_NUMBER }}
         #  prTitle: ${{ env.PR_TITLE }}
         run: |
+          PR_TITLE_ONELINE=$(echo ${{ needs.get_pr_info.outputs.pr_title }} | head -1)
+
           gh pr checkout ${{ needs.get_pr_info.outputs.pr_number }}
           git pull
-          git commit --all --allow-empty -m "${{ needs.get_pr_info.outputs.pr_title }} (#${{ needs.get_pr_info.outputs.pr_number }})"
+          git commit --all --allow-empty -m "$PR_TITLE_ONELINE (#${{ needs.get_pr_info.outputs.pr_number }})"
           git log -5
 
       - name: Generate a changelog
