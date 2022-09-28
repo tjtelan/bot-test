@@ -62,7 +62,7 @@ jobs:
           echo "PR_NUMBER='${{ inputs.pr_number }}'" >> $GITHUB_ENV
           echo "PR_NUMBER='${{ inputs.pr_number }}'"
 
-          echo ${{ github.event.head_commit.message }} > /tmp/pr-title-tmp
+          echo '${{ github.event.head_commit.message }}' > /tmp/pr-title-tmp
           cat /tmp/pr-title-tmp | head -1 > /tmp/pr-title
           echo PR_TITLE="$(cat /tmp/pr-title)" >> $GITHUB_ENV
           echo PR_TITLE="$(cat /tmp/pr-title)"
