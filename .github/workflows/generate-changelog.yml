@@ -204,11 +204,21 @@ jobs:
       #  id: git-branch-name
       #  uses: EthanSK/git-branch-name-action@v1
 
+      - name: Check repo
+        run: |
+          ls
+          git status
+
       - name: Download ${{ env.CHANGELOG_FILENAME }}
         uses: actions/download-artifact@v2
         with:
           name: ${{ env.CHANGELOG_FILENAME }}
           path: .
+
+      - name: Check repo
+        run: |
+          ls
+          git status
 
       #- name: Git branch name
       #  id: git-branch-name
