@@ -229,6 +229,8 @@ jobs:
       #  uses: EthanSK/git-branch-name-action@v1
 
       - name: Checkout PR branch
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
         run: |
           gh pr checkout ${{ needs.get_pr_info.outputs.pr_number }}
           ls
