@@ -61,8 +61,8 @@ jobs:
           echo "PR_BRANCH='$(git rev-parse --abbrev-ref HEAD)'"
           echo "PR_NUMBER='${{ inputs.pr_number }}'" >> $GITHUB_ENV
           echo "PR_NUMBER='${{ inputs.pr_number }}'"
-          echo "PR_TITLE='${{ github.event.head_commit.message }}'" >> $GITHUB_ENV
-          echo "PR_TITLE='${{ github.event.head_commit.message }}'"
+          echo "PR_TITLE='$(echo ${{ github.event.head_commit.message }} | head -1)'" >> $GITHUB_ENV
+          echo "PR_TITLE='$(echo ${{ github.event.head_commit.message }} | head -1)'"
           gh auth login --with-token < <(echo ${{ secrets.GITHUB_TOKEN }})
           gh pr checkout ${{ inputs.pr_number }}
 
@@ -137,11 +137,9 @@ jobs:
         #  prNumber: ${{ env.PR_NUMBER }}
         #  prTitle: ${{ env.PR_TITLE }}
         run: |
-          PR_TITLE_ONELINE=$(echo ${{ needs.get_pr_info.outputs.pr_title }} | head -1)
-
           gh pr checkout ${{ needs.get_pr_info.outputs.pr_number }}
           git pull
-          git commit --all --allow-empty -m "$PR_TITLE_ONELINE (#${{ needs.get_pr_info.outputs.pr_number }})"
+          git commit --all --allow-empty -m "${{ needs.get_pr_info.outputs.pr_title }} (#${{ needs.get_pr_info.outputs.pr_number }})"
           git log -5
 
       - name: Generate a changelog
