@@ -73,14 +73,15 @@ jobs:
 
           if [[ ${{ github.event_name == 'pull_request' }} ]]; then
             NUMBER=${{ needs.get_pr_number_pr_event.outputs.pr_number }}
+            echo "PR number is: $NUMBER"
+            echo "::set-output name=number::$NUMBER"
           fi
 
           if [[ ${{ github.event_name == 'push' }} ]]; then
             NUMBER=${{ needs.get_pr_number_push_event.outputs.pr_number }}
+            echo "PR number is: $NUMBER"
+            echo "::set-output name=number::$NUMBER"
           fi
-
-          echo "PR number is: $NUMBER"
-          echo "::set-output name=number::$NUMBER"
 
   generate_changelog:
     needs: get_pr_number
