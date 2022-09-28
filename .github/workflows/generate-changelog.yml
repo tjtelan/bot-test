@@ -163,23 +163,23 @@ jobs:
           git reset HEAD --hard
           gh pr checkout ${{ needs.get_pr_info.outputs.pr_number }}
 
-      # Test if CHANGELOG.md needs to be updated
-      - name: Test if ${{ env.CHANGELOG_FILENAME }} needs updating in repo
-        id: repo-check
-        run: |
-          git add $CHANGELOG_FILENAME
-          git status
-          FILES_ADDED=$(git diff --cached --name-only | grep --count $CHANGELOG_FILENAME)
-          echo found #$FILES_ADDED files changed
+      ## Test if CHANGELOG.md needs to be updated
+      #- name: Test if ${{ env.CHANGELOG_FILENAME }} needs updating in repo
+      #  id: repo-check
+      #  run: |
+      #    git add $CHANGELOG_FILENAME
+      #    git status
+      #    FILES_ADDED=$(git diff --cached --name-only | grep --count $CHANGELOG_FILENAME)
+      #    echo found #$FILES_ADDED files changed
 
-          if [[ "$FILES_ADDED" -eq 1 ]]; then
-            echo "Need to update $CHANGELOG_FILENAME"
-            git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
-            #echo "::set-output name=result::true"
-          else
-            echo "No $CHANGELOG_FILENAME changes to commit"
-            #echo "::set-output name=result::false"
-          fi
+      #    if [[ "$FILES_ADDED" -eq 1 ]]; then
+      #      echo "Need to update $CHANGELOG_FILENAME"
+      #      git commit -m "Updating $CHANGELOG_FILENAME [actions skip]"
+      #      #echo "::set-output name=result::true"
+      #    else
+      #      echo "No $CHANGELOG_FILENAME changes to commit"
+      #      #echo "::set-output name=result::false"
+      #    fi
 
   commit_changelog:
     name: Commit updates
