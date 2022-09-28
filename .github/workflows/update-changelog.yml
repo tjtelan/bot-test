@@ -103,7 +103,7 @@ jobs:
 
       # This will only work in PRs
       - name: Get PR info from pull request event
-        if: inputs.event_name == 'pull_request'
+        if: github.event_name == 'pull_request'
         id: info
         uses: Brymastr/pr-info-action@v1
 
@@ -111,14 +111,14 @@ jobs:
         uses: crazy-max/ghaction-dump-context@v1.2.1
 
       - name: Set outputs
-        if: inputs.event_name == 'pull_request'
+        if: github.event_name == 'pull_request'
         run: |
           echo "PR_BRANCH=${{ steps.info.outputs.head_branch }}" >> $GITHUB_ENV
           echo "PR_NUMBER=${{ needs.get_pr_number.outputs.pr_number }}" >> $GITHUB_ENV
           echo "PR_TITLE=${{ steps.info.outputs.title }}" >> $GITHUB_ENV
 
       - name: Get PR info from push event
-        if: inputs.event_name == 'push'
+        if: github.event_name == 'push'
         run: |
           echo "PR_BRANCH='$(git rev-parse --abbrev-ref HEAD)'" >> $GITHUB_ENV
           echo "PR_BRANCH='$(git rev-parse --abbrev-ref HEAD)'"
